@@ -11,4 +11,4 @@ random radius.
 
 At this point, the game will be running on a fixed 800x600 grid.
 
-This was made usiing githib.com/hajimehoshi/ebiten
+This was made usiing github.com/hajimehoshi/ebiten
