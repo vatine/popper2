@@ -96,7 +96,7 @@ func (e *Explosion) Draw(t *ebiten.Image) {
 	ir := int(e.r + 0.5)
 	bx := int(e.x)
 	by := int(e.y)
-	white := color.RGBA{R: 255, G: 255, B: 255, A: 128}
+	white := color.RGBA{R: 224, G: 224, B: 224, A: 128}
 	for dx := -ir; dx <= ir; dx++ {
 		for dy := -ir; dy <= ir; dy++ {
 			fx := float64(bx + dx)
