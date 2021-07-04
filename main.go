@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	
 	"github.com/hajimehoshi/ebiten/v2"
@@ -10,9 +11,15 @@ import (
 )
 
 func main() {
-	log.SetLevel(log.DebugLevel)
+	verbose := flag.Bool("v", false, "Verbose (dbug) logging")
+	testMode := flag.Bool("d", false, "Debug (test) mode")
 	g := game.NewGame()
-	// g.TestSetup()
+	if *verbose {
+		log.SetLevel(log.DebugLevel)
+	}
+	if *testMode {
+		g.TestSetup()
+	}
 
 	fmt.Println(ebiten.RunGame(g))
 }

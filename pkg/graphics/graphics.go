@@ -96,7 +96,7 @@ func (e *Explosion) Draw(t *ebiten.Image) {
 	ir := int(e.r + 0.5)
 	bx := int(e.x)
 	by := int(e.y)
-	white := color.RGBA{R: 255, G: 255, B: 255, A: 128}
+	white := color.RGBA{R: 224, G: 224, B: 224, A: 128}
 	for dx := -ir; dx <= ir; dx++ {
 		for dy := -ir; dy <= ir; dy++ {
 			fx := float64(bx + dx)
@@ -129,7 +129,7 @@ func (e *Explosion) Step(w, h float64) {
 		e.innerR += e.dr
 	}
 
-	if e.innerR == 0.0 && e.r > (0.8 * e.maxR) {
+	if e.innerR == 0.0 && e.r > (0.5 * e.maxR) {
 		e.innerR += e.dr		
 	}
 }
@@ -182,14 +182,20 @@ func (s *Sphere) paint() {
 	red := clamp(rand.NormFloat64() * 15 + 175, 0, 255)
 	green := clamp(rand.NormFloat64() * 15 + 175, 0, 255)
 	blue := clamp(rand.NormFloat64() * 15 + 175, 0, 255)
-	col := color.RGBA{R: uint8(red), G: uint8(green), B: uint8(blue), A: 210}
 	side := int(2*r+1)
 	s.img = ebiten.NewImage(side, side)
+
 	for x := 0; x < side; x++ {
 		for y := 0; y < side; y++ {
 			dx := r - float64(x)
 			dy := r - float64(y)
 			if (dx*dx)+(dy*dy) <= r*r {
+				rf := ((dx*dx)+(dy*dy)) / (r*r)
+				alpha := 192 + int(64 * rf)
+				if alpha > 255 {
+					alpha = 255
+				}
+				col := color.RGBA{R: uint8(red), G: uint8(green), B: uint8(blue), A: uint8(alpha)}
 				s.img.Set(x, y, col)
 			}
 		}
@@ -202,7 +208,7 @@ func NewSphere(w, h float64) *Sphere {
 	rv := new(Sphere)
 
 	a := 2 * math.Pi * rand.Float64()
-	s := clamp(rand.NormFloat64() * 1.5 + 5, 1.0, 10.0)
+	s := clamp(rand.NormFloat64() * 1.5 + 5, 1.0, 9.0)
 	r := clamp(rand.NormFloat64() * 8 + 30, 7, 90.0)
 
 	rv.x = (w - 2 * r) * rand.Float64() + r
