@@ -22,6 +22,8 @@ type Game struct {
 	available  int
 	left       int
 	w, h       int
+	score      int
+	scoreDelta int
 }
 
 // Create a new "designed for play" game.
@@ -31,6 +33,7 @@ func NewGame() *Game {
 	g.w = 800
 	g.h = 600
 	g.available = 1
+	g.scoreDelta = 1
 
 	g.NewRound()
 
@@ -39,7 +42,7 @@ func NewGame() *Game {
 		red := color.RGBA{R: 255, A: 255}
 		for x := 0; x < 10; x++ {
 			for y := 0; y < 10; y++ {
-				dx := (4 -x)
+				dx := (4 - x)
 				if dx < 0 {
 					dx = -dx
 				}
@@ -53,7 +56,7 @@ func NewGame() *Game {
 			}
 		}
 	}
-	
+
 	return g
 }
 
@@ -84,7 +87,7 @@ func (g *Game) NewRound() {
 		"round":      g.round,
 		"spheres":    len(g.spheres),
 		"explosions": len(g.explosions),
-		"available": g.available,
+		"available":  g.available,
 	}).Debug("NewRound start")
 	g.round++
 	g.spheres = []*graphics.Sphere{}
@@ -101,7 +104,7 @@ func (g *Game) NewRound() {
 		"round":      g.round,
 		"spheres":    len(g.spheres),
 		"explosions": len(g.explosions),
-		"available": g.available,
+		"available":  g.available,
 	}).Debug("Newround end")
 }
 
@@ -119,11 +122,14 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	for l := 0; l < g.left; l++ {
 		var g ebiten.GeoM
-		
+
 		g.Translate(float64(12*l), 5)
 		opts := ebiten.DrawImageOptions{GeoM: g}
 		screen.DrawImage(bomb, &opts)
 	}
+
+	graphics.DrawNumber(screen, 10, 550, 8, g.round)
+	graphics.DrawNumber(screen, 600, 550, 8, g.score)
 }
 
 // Is the game over? This means:
@@ -134,6 +140,7 @@ func (g *Game) done() bool {
 	if len(g.explosions) > 0 {
 		return false
 	}
+	g.scoreDelta = 1
 	if g.left > 0 {
 		return false
 	}
@@ -162,7 +169,7 @@ func (g *Game) roundOver() bool {
 // Compute the next frame
 func (g *Game) Update() error {
 	if g.done() {
-		return fmt.Errorf("Game over, man")
+		return fmt.Errorf("Game over, man (round %d, score %d)", g.round, g.score)
 	}
 
 	fw := float64(g.w)
@@ -189,6 +196,8 @@ func (g *Game) Update() error {
 		}
 		if explodes {
 			g.explosions = append(g.explosions, s.Explode())
+			g.score += g.scoreDelta
+			g.scoreDelta++
 		} else {
 			newSpheres = append(newSpheres, s)
 		}
