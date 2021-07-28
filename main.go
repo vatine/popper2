@@ -14,6 +14,8 @@ func main() {
 	verbose := flag.Bool("v", false, "Verbose (dbug) logging")
 	testMode := flag.Bool("d", false, "Debug (test) mode")
 	g := game.NewGame()
+	flag.Parse()
+	
 	if *verbose {
 		log.SetLevel(log.DebugLevel)
 	}
