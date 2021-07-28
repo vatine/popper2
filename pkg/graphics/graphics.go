@@ -202,14 +202,23 @@ func (s *Sphere) paint() {
 	}
 }
 
+// Return a multiplier and an offset for sphere radius.
+func roundRadius(round int) (float64, float64) {
+	shape := clamp(8.0 - (float64(round)/17), 0.01, 8)
+	offset := clamp(30.0 - (float64(round)/8), 5, 30)
+
+	return shape, offset
+}
+
 // Create a new sphere, in a random place, with random colours and a
 // random direction of movement.
-func NewSphere(w, h float64) *Sphere {
+func NewSphere(w, h float64, round int) *Sphere {
 	rv := new(Sphere)
 
 	a := 2 * math.Pi * rand.Float64()
 	s := clamp(rand.NormFloat64() * 1.5 + 5, 1.0, 9.0)
-	r := clamp(rand.NormFloat64() * 8 + 30, 7, 90.0)
+	shape, offset := roundRadius(round)
+	r := clamp(rand.NormFloat64() * shape + offset, 7, 90.0)
 
 	rv.x = (w - 2 * r) * rand.Float64() + r
 	rv.y = (h - 2 * r) * rand.Float64() + r

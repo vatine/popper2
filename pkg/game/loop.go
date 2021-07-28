@@ -62,12 +62,10 @@ func NewGame() *Game {
 
 // Convert a game to a dedicated test setup.
 func (g *Game) TestSetup() {
-	g.spheres = []*graphics.Sphere{
-		graphics.TestSphere(320, 240, 0),
-		graphics.TestSphere(320, 240, 1),
-		graphics.TestSphere(320, 240, 2),
-		graphics.TestSphere(320, 240, 3),
-	}
+	g.round = 40
+	log.WithFields(log.Fields{
+		"g.round": g.round,
+	}).Debug("TestSetup")
 }
 
 // Compute fib(n)
@@ -77,6 +75,13 @@ func fib(n int) int {
 		a, b = b, a+b
 	}
 	return b
+}
+
+func (g *Game) adjustAvailable() {
+	if fib(g.available) <= g.round {
+		g.available++
+		g.adjustAvailable()
+	}
 }
 
 // Create a new round. This basically increases the number of
@@ -93,12 +98,10 @@ func (g *Game) NewRound() {
 	g.spheres = []*graphics.Sphere{}
 	spheres := g.round
 	for i := 0; i < spheres; i++ {
-		g.spheres = append(g.spheres, graphics.NewSphere(float64(g.w), float64(g.h)))
+		g.spheres = append(g.spheres, graphics.NewSphere(float64(g.w), float64(g.h), g.round))
 	}
 	g.explosions = []*graphics.Explosion{}
-	if fib(g.available) <= g.round {
-		g.available++
-	}
+	g.adjustAvailable()
 	g.left = g.available
 	log.WithFields(log.Fields{
 		"round":      g.round,
